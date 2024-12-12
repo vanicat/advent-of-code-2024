@@ -12,10 +12,40 @@ exem = """....#.....
 ......#...
 """
 
+type vec = tuple[int, int]
+
+
+class Dir_manager:
+    line_dir: dict[vec, list[bool]]
+
+    def __init__(self, height:int, width:int):
+        self.line_dir = {}
+
+        for dir in Labyrinthe.DIR_TO_SYMB:
+            if dir[0] == 0:
+                self.line_dir[dir] = [False for j in range(width)]
+            else:
+                self.line_dir[dir] = [False for i in range(height)]
+
+    def add_dir(self, i:int, j:int, dir_i:int, dir_j:int):
+        if dir_i == 0:
+            self.line_dir[(dir_i, dir_j)][i] = True
+        else:
+            self.line_dir[(dir_i, dir_j)][j] = True
+
+    def check_dir(self, i:int, j:int, dir_i:int, dir_j:int):
+        if dir_i == 0:
+            return self.line_dir[(dir_i, dir_j)][i]
+        else:
+            return self.line_dir[(dir_i, dir_j)][j]
+
+
 class Labyrinthe:
     labi:list[list[bool]]
     
-    seen:list[list[set[tuple[int, int]]]]
+    seen:list[list[set[vec]]]
+
+    line_dir: Dir_manager
     
     pos_i:int
     pos_j:int
@@ -25,21 +55,21 @@ class Labyrinthe:
     height:int
     width:int
 
-    SYMB_TO_DIR = {
+    SYMB_TO_DIR:dict[str, vec] = {
         "^": (-1, 0),
         ">": (0, 1),
         "<": (0, -1),
         "v": (1, 0),
     }
 
-    DIR_TO_SYMB = {
+    DIR_TO_SYMB:dict[vec, str] = {
         (-1, 0): "^",
         (0,  1): ">",
         (0, -1): "<",
         (1,  0): "v",
     }
 
-    TURN = {
+    TURN:dict[vec, vec] = {
         (-1, 0): (0, 1),
         (0, 1): (1, 0),
         (1, 0): (0, -1),
@@ -56,6 +86,8 @@ class Labyrinthe:
         ]
 
         self.seen = [[set() for j in range(self.width)] for i in range(self.height)] 
+
+        self.line_dir = Dir_manager(self.height, self.width)
 
         for i in range(self.height):
             for j in range(self.width):
@@ -117,15 +149,29 @@ class Labyrinthe:
             self.seen[self.pos_i][self.pos_j].add((self.dir_i, self.dir_j))
         return self.nb_seen()
 
+    def check_line(self, dir_i, dir_j) -> bool:
+        i = self.pos_i
+        j = self.pos_j
+        while 0 <= i < self.height and 0 <= j < self.width:
+            if self.labi[i][j]:
+                return False
+            if (dir_i, dir_j) in self.seen[i][j]:
+                return True
+            i += dir_i
+            j += dir_j
+        return False
         
     def parcours2(self) -> int:
+        nb = 0
         while self.step():
-            if self.TURN[(self.dir_i, self.dir_j)] in self.seen[self.pos_i][self.pos_j]:
-                print(f"cycle found at ({self.pos_i}, {self.pos_j})")
+            if self.line_dir.check_dir(self.pos_i, self.pos_j, *self.TURN[self.dir_i, self.dir_j]):
+                if self.check_line(*self.TURN[self.dir_i, self.dir_j]):
+                    print(f"could turn at ({self.pos_i, self.pos_j})")
+                    nb += 1
             self.seen[self.pos_i][self.pos_j].add((self.dir_i, self.dir_j))
-            print(self)
+            self.line_dir.add_dir(self.pos_i, self.pos_j, self.dir_i, self.dir_j)
 
-        return self.nb_seen()
+        return nb
 
 
 lb_exem = Labyrinthe(StringIO(exem))
@@ -148,5 +194,10 @@ PB_FILE_NAME = "input-06-1.txt"
 with open(PB_FILE_NAME) as f:
     lb = Labyrinthe(f)
     print(lb.parcours())
+
+
+with open(PB_FILE_NAME) as f:
+    lb = Labyrinthe(f)
+    print(lb.parcours2())
 
 
