@@ -31,7 +31,7 @@ class V:
             except TypeError|ValueError:
                 raise NotImplemented
             
-    def __rmult__(self, other):
+    def __rmul__(self, other):
         if isinstance(other, int):
             return V(self.i * other, self.j * other)
         raise NotImplemented
