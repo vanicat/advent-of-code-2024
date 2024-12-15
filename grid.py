@@ -1,6 +1,6 @@
-from collections.abc import Generator
+from collections.abc import Generator, Iterable
 from dataclasses import dataclass
-from typing import Callable, ClassVar, Optional
+from typing import Any, Callable, ClassVar, Optional
 
 
 @dataclass(slots=True, frozen=True)
@@ -128,6 +128,9 @@ class Grid[T]:
     
     def __getitem__(self, pos:V) -> T:
         return self.labi[pos]
+        
+    def __setitem__(self, pos:V, value:T) -> None:
+        self.labi[pos] = value
     
     def __iter__(self) -> Generator[T]:
         for i in range(self.size.i):
