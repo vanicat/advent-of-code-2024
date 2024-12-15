@@ -40,6 +40,12 @@ class V:
         yield self.i
         yield self.j
 
+    def copy(self, *, i:Optional[int]=None, j:Optional[int]=None) -> "V":
+        if i is None:
+            i = self.i
+        if j is None:
+            j = self.j
+        return V(i, j)
 
 class D(V):
     ALL_DIR: ClassVar[list["D"]] = []
