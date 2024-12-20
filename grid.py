@@ -126,6 +126,15 @@ class Grid[T]:
     def to_str(self, str_elem: Callable[[T], str]) -> str:
         return "\n".join("".join(str_elem(self[V(i, j)]) for j in range(self.size.j)) for i in range(self.size.i))
     
+    @classmethod
+    def from_str(cls, data:str, builder:dict[str, Callable[[int, int], T]], str_elem:Optional[Callable[[T], str]]) -> "Grid":
+        lines = [line.split() for line in data.strip().split("\n")]
+        height = len(lines)
+        width = len(lines[0])
+        def default(i:int, j:int) -> T:
+            return builder[lines[i][j]](i, j)
+        return Grid(height, width, default, str_elem)
+
     def __str__(self) -> str:
         if self.str_elem is None:
             return self.__repr__()
