@@ -51,7 +51,8 @@ class D(V):
     ALL_DIR: ClassVar[list["D"]] = []
     SYMB_TO_DIR: ClassVar[dict[str, "D"]] = {}
     DIR_TO_SYMB: ClassVar[dict["D", str]] = {}
-    TURN: ClassVar[dict["D", "D"]] = {}
+    TURN_LEFT: ClassVar[dict["D", "D"]] = {}
+    TURN_RIGHT: ClassVar[dict["D", "D"]] = {}
 
     @classmethod
     def from_str(cls, st:str) -> "D":
@@ -61,7 +62,13 @@ class D(V):
         return D.DIR_TO_SYMB[self]
     
     def turn(self) -> "D":
-        return D.TURN[self]
+        return D.TURN_LEFT[self]
+    
+    def turn_left(self) -> "D":
+        return D.TURN_LEFT[self]
+    
+    def turn_right(self) -> "D":
+        return D.TURN_RIGHT[self]
     
     @classmethod
     def all_dir(cls):
@@ -75,7 +82,8 @@ pred = D(0, -1)
 for letter, dir in [("^", D(-1, 0)), (">", D(0, 1)), ("v", D(1, 0)), ("<", D(0, -1))]:
     D.SYMB_TO_DIR[letter] = dir
     D.DIR_TO_SYMB[dir] = letter
-    D.TURN[pred] = dir
+    D.TURN_LEFT[pred] = dir
+    D.TURN_RIGHT[dir] = pred
     D.ALL_DIR.append(dir)
     pred = dir
 
