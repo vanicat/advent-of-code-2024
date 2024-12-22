@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Any, Callable, ClassVar, Optional
 
 
-@dataclass(slots=True, frozen=True)
+@dataclass(slots=True, frozen=True, order=True)
 class V:
     i: int
     j: int
