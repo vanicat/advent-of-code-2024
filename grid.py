@@ -128,7 +128,7 @@ class Grid[T]:
     
     @classmethod
     def from_str(cls, data:str, builder:dict[str, Callable[[int, int], T]], str_elem:Optional[Callable[[T], str]]) -> "Grid":
-        lines = [line.split() for line in data.strip().split("\n")]
+        lines = [line.strip() for line in data.strip().split("\n")]
         height = len(lines)
         width = len(lines[0])
         def default(i:int, j:int) -> T:
